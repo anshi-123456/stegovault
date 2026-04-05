@@ -4,6 +4,7 @@ from encode import encode_file
 
 app = Flask(__name__)
 
+# 📂 Folder setup
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "outputs"
 
@@ -11,29 +12,38 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 
+# 🏠 Home Route
 @app.route("/")
 def index():
-    print("✅ Index route hit")
     return render_template("index.html")
 
 
+# 🔐 Encode Route
 @app.route("/encode", methods=["POST"])
 def encode():
-    image = request.files["image"]
-    secret = request.files["file"]
-    password = request.form["password"]
+    try:
+        image = request.files["image"]
+        secret = request.files["file"]
+        password = request.form["password"]
 
-    image_path = os.path.join(UPLOAD_FOLDER, image.filename)
-    file_path = os.path.join(UPLOAD_FOLDER, secret.filename)
-    output_path = os.path.join(OUTPUT_FOLDER, "stego.png")
+        # Save uploaded files
+        image_path = os.path.join(UPLOAD_FOLDER, image.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, secret.filename)
+        output_path = os.path.join(OUTPUT_FOLDER, "stego.png")
 
-    image.save(image_path)
-    secret.save(file_path)
+        image.save(image_path)
+        secret.save(file_path)
 
-    encode_file(image_path, file_path, password, output_path)
+        # Call encoding function
+        encode_file(image_path, file_path, password, output_path)
 
-    return send_file(output_path, as_attachment=True)
+        # Return file for download
+        return send_file(output_path, as_attachment=True)
+
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
 
 
+# 🚀 Run app (for local testing)
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
