@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StegoVault — Dual-Channel Secure Transmission</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+ 
+<!-- ── Header ── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        <circle cx="12" cy="16" r="1.5" fill="#00e5ff"/>
+      </svg>
+    </div>
+    <div class="logo-text">Stego<span>Vault</span></div>
+  </div>
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    SYSTEM ONLINE
+  </div>
+</header>
+ 
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-label">Dual-Channel Secure Data Transmission</div>
+  <h1>Hide. <span class="glow-word">Encrypt.</span> Transmit.</h1>
+  <p class="hero-sub">AES Encryption meets LSB Steganography in one unified web interface. Your data disappears into the image — invisible, undetectable, secure.</p>
+  <div class="badges">
+    <div class="badge badge-crypto">🔐 AES-256 Encryption</div>
+    <div class="badge badge-stego">🖼 LSB Steganography</div>
+    <div class="badge badge-crypto">🌐 Flask Web App</div>
+    <div class="badge badge-stego">📁 File Hiding</div>
+  </div>
+</div>
+ 
+<!-- ── Workspace ── -->
+<div class="workspace">
+ 
+  <!-- ENCODE PANEL -->
+  <div class="panel encode">
+    <div class="panel-title"><div class="dot"></div> Encode — Hide Data</div>
+ 
+    <div class="drop-zone" id="coverDrop"
+         ondragover="onDragOver(event,'coverDrop')"
+         ondragleave="onDragLeave('coverDrop')"
+         ondrop="onDrop(event,'coverPreview','coverDrop')">
+      <input type="file" accept="image/*" onchange="onFileSelect(event,'coverPreview')">
+      <span class="dz-icon">🖼</span>
+      <div class="dz-title">Drop Cover Image Here</div>
+      <div class="dz-sub">PNG / JPG / BMP — max 10MB</div>
+    </div>
+ 
+    <div class="img-preview" id="coverPreview">
+      <div class="scan-line"></div>
+      <span>No image selected</span>
+    </div>
+ 
+    <div class="drop-zone" id="secretDrop" style="margin-bottom:18px;"
+         ondragover="onDragOver(event,'secretDrop')"
+         ondragleave="onDragLeave('secretDrop')"
+         ondrop="onDrop(event,null,'secretDrop')">
+      <input type="file" onchange="onSecretSelect(event)">
+      <span class="dz-icon">📂</span>
+      <div class="dz-title" id="secretLabel">Drop Secret File Here</div>
+      <div class="dz-sub">Any file type supported</div>
+    </div>
+ 
+    <div class="field">
+      <label>AES Encryption Password</label>
+      <input type="password" id="encodePass" placeholder="Enter strong password…" oninput="updateStrength(this.value)">
+      <div class="strength-meter">
+        <div class="strength-bar" id="s1"></div>
+        <div class="strength-bar" id="s2"></div>
+        <div class="strength-bar" id="s3"></div>
+        <div class="strength-bar" id="s4"></div>
+      </div>
+    </div>
+ 
+    <button class="btn btn-encode" onclick="startEncode()">⚡ ENCODE &amp; HIDE DATA</button>
+  </div>
+ 
+  <!-- DECODE PANEL -->
+  <div class="panel decode">
+    <div class="panel-title"><div class="dot"></div> Decode — Recover Data</div>
+ 
+    <div class="drop-zone decode" id="stegoDrop"
+         ondragover="onDragOver(event,'stegoDrop')"
+         ondragleave="onDragLeave('stegoDrop')"
+         ondrop="onDrop(event,'stegoPreview','stegoDrop')">
+      <input type="file" accept="image/*" onchange="onFileSelect(event,'stegoPreview')">
+      <span class="dz-icon">🔍</span>
+      <div class="dz-title">Drop Stego Image Here</div>
+      <div class="dz-sub">The image containing hidden data</div>
+    </div>
+ 
+    <div class="img-preview" id="stegoPreview">
+      <span>No stego image</span>
+    </div>
+ 
+    <div class="field" style="margin-bottom:16px;">
+      <label>Decryption Password</label>
+      <input type="password" id="decodePass" placeholder="Enter your password…">
+    </div>
+ 
+    <div class="field">
+      <label>Output Filename</label>
+      <input type="text" id="outName" placeholder="recovered_file.txt">
+    </div>
+ 
+    <button class="btn btn-decode" onclick="startDecode()">🔓 EXTRACT &amp; DECRYPT</button>
+ 
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="ic-icon">🛡</div>
+        <div class="ic-label">Encryption</div>
+        <div class="ic-value">AES-256-CBC</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">👁‍🗨</div>
+        <div class="ic-label">Technique</div>
+        <div class="ic-value">LSB Embed</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel" id="outputPanel" style="display:none;">
+    <div class="panel-title output-title">
+      <div class="dot-gradient"></div>
+      ENCODING COMPLETE — DUAL OUTPUT READY
+    </div>
+ 
+    <div class="output-grid">
+      <div class="output-card">
+        <div class="oc-icon">🖼</div>
+        <div class="oc-title">Stego Image</div>
+        <div class="oc-value">stego.png</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-icon">📄</div>
+        <div class="oc-title">Encrypted Text</div>
+        <div class="oc-value">encrypted_output.txt</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-icon">✅</div>
+        <div class="oc-title">Payload Size</div>
+        <div class="oc-value" id="payloadSize">—</div>
+      </div>
+    </div>
+ 
+    <div class="cipher-box" id="cipherBox">
+      x7Kp2mRqL9sT4nVwA1bCeGhJfYuZdXiOk3FlM6Pj8QtHvWyNrUcSaBgDmEnIoRp...
+    </div>
+ 
+    <div class="download-row">
+      <button class="btn-dl" onclick="showToast('📥 stego.png downloaded!')">📥 Download stego.png</button>
+      <button class="btn-dl" onclick="showToast('📥 encrypted_output.txt downloaded!')">📥 Download encrypted_output.txt</button>
+      <button class="btn-dl" onclick="showToast('🔄 Reset complete!')">🔄 Reset Workspace</button>
+    </div>
+  </div>
+ 
+  <!-- ARCHITECTURE PANEL -->
+  <div class="arch-panel">
+    <div class="panel-title arch-title">
+      <div class="dot-glow"></div>
+      SYSTEM ARCHITECTURE
+    </div>
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="an-icon">👤</div>
+        <div class="an-label">Frontend</div>
+        <div class="an-name">HTML / CSS</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">⚙️</div>
+        <div class="an-label">Backend</div>
+        <div class="an-name">Flask / Python</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">🔐</div>
+        <div class="an-label">Security</div>
+        <div class="an-name">AES Crypto</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">🖼</div>
+        <div class="an-label">Stego Engine</div>
+        <div class="an-name">LSB Embed</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">📤</div>
+        <div class="an-label">Output</div>
+        <div class="an-name">Dual Channel</div>
+      </div>
+    </div>
+  </div>
+ 
+</div><!-- /workspace -->
+ 
+<!-- ── Footer ── -->
+<footer>
+  STEGOVAULT v1.0 — DUAL-CHANNEL SECURE TRANSMISSION — AES + LSB STEGANOGRAPHY — FLASK WEB APPLICATION
+</footer>
+ 
+<!-- ── Progress Overlay ── -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-ring-wrap">
+    <div class="progress-ring"></div>
+    <div class="progress-icon" id="progressIcon">🔐</div>
+  </div>
+  <div class="progress-label" id="progressLabel">ENCRYPTING DATA</div>
+  <div class="progress-sub" id="progressSub">AES-256-CBC encryption in progress...</div>
+</div>
+ 
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+ 
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
